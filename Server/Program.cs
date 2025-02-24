@@ -8,6 +8,7 @@ using System.Threading;
 
 class Server
 {
+    //sözlük veri tipi ve list veri tipini tanımlama
     private static List<TcpClient> clients = new List<TcpClient>();  // Bağlantılı istemciler
     private static List<string> kullaniciadlari = new List<string>(); // Kullanıcı adları
     private static Dictionary<string, TcpClient> clientDictionary = new Dictionary<string, TcpClient>(); // Kullanıcı adı ve istemci eşlemesi
@@ -51,7 +52,8 @@ class Server
         try
         {
             // Bağlantı açıldığında kullanıcı adı al
-            bytesRead = stream.Read(buffer, 0, buffer.Length);
+            bytesRead = stream.Read(buffer, 0, buffer.Length);//public int Read(byte[] buffer, int offset, int count);
+
             string initialMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
             string[] parts = initialMessage.Split(':');
             username = parts[0]; // Kullanıcı adı ilk kısmı alır
@@ -99,7 +101,7 @@ class Server
             // Bağlantıyı kapat
             lock (clientDictionary)
             {
-                clientDictionary.Remove(username); // Kullanıcı adı ve istemci eşlemesini sil
+                clientDictionary.Remove(username); // xsilmem gerekiyor yoksa çakışma oluyor.
             }
             lock (clients)
             {
@@ -109,7 +111,7 @@ class Server
         }
     }
 
-    // Mesajı tüm bağlı istemcilere gönder
+    // Mesajı tüm bağlı clientlere gönder
     private static void BroadcastMessage(string message, TcpClient sendingClient)
     {
         byte[] messageBuffer = Encoding.UTF8.GetBytes(message);
